@@ -1,11 +1,14 @@
 These are some installation notes taken in the process of installing WRF version 3.8 on a computer with Ubuntu Server 16.04 LTS.
 
 ## Install required software
+
 ```console
 $ sudo apt−get install build−essential csh gfortran m4
 ```
 
 ## System environment tests
+
+_Youtube video of this part available [here](https://www.youtube.com/watch?v=_9lBM4k7HQc)._
 
 First and foremost, it is very important to have a gfortran compiler, as well as gcc and cpp. If you have these installed, you should be given a path for the location of each.
 ```console
@@ -90,7 +93,10 @@ $ ./TEST_sh.sh
 SUCCESS sh test
 ```
 
+
 ## Building libraries
+
+_Youtube video of this part available [here](https://www.youtube.com/watch?v=Ipd8vkAj8Fk)._
 
 Before getting started, you need to make another directory. Go inside your `Build_WRF` directory and then make a directory called `LIBRARIES`.
 ```console
@@ -219,6 +225,8 @@ $ cd ..
 
 ## Libraries compatibility tests
 
+_Youtube video of this part available [here](https://www.youtube.com/watch?v=j205Ki84ZF4)._
+
 Once the target machine is able to make small Fortran and C executables (what was verified in the System Environment Tests section), and after the NetCDF and MPI libraries are constructed (two of the libraries from the Building Libraries section), to emulate the WRF code's behavior, two additional small tests are required. We need to verify that the libraries are able to work with the compilers that are to be used for the WPS and WRF builds.
 
 Move to `TESTS` directory, download the tar file that contans these tests and unpack it.
@@ -268,6 +276,8 @@ SUCCESS test 2 fortran + c + netcdf + mpi
 ```
 
 ## Building WRFV3
+
+_Youtube video of this part available [here](https://www.youtube.com/watch?v=hkLrdlQnKTw)._
 
 After ensuring that all libraries are compatible with the compilers, you can now prepare to build WRFV3. If you do not already have a `WRFV3` tar file, move to your `Build_WRF` directory, download that file and unpack it. Then go into the `WRFV3` directory and create a configuration file for your computer and compiler.
 ```console
@@ -363,6 +373,8 @@ WRFV3/test/em_real
 ```
 
 ## Building WPS
+
+_Youtube video of this part available [here](https://www.youtube.com/watch?v=uCImaGGCWDs)._
 
 After the WRF model is built, the next step is building the WPS program (if you plan to run real cases, as opposed to idealized cases). The WRF model MUST be properly built prior to trying to build the WPS programs. If you do not already have the WPS source code, move to your `Build_WRF` directory, download that file and unpack it. Then go into the WPS directory and make sure the WPS directory is clean.
 
