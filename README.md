@@ -361,3 +361,110 @@ These executables are linked to 2 different directories. You can choose to run W
 WRFV3/run
 WRFV3/test/em_real
 ```
+
+## Building WPS
+
+After the WRF model is built, the next step is building the WPS program (if you plan to run real cases, as opposed to idealized cases). The WRF model MUST be properly built prior to trying to build the WPS programs. If you do not already have the WPS source code, move to your `Build_WRF` directory, download that file and unpack it. Then go into the WPS directory and make sure the WPS directory is clean.
+
+```console
+$ cd {path_to_dir}/Build_WRF
+$ wget http://www2.mmm.ucar.edu/wrf/src/WPSV3.8.TAR.gz
+$ tar -zxvf WPSV3.8.TAR.gz
+$ cd {path_to_dir}/Build_WRF/WPS
+$ ./clean
+```
+
+The next step is to configure WPS, however, you first need to set some paths for the ungrib libraries and then you can configure.
+
+```console
+$ sudo nano ~/.bashrc
+
+export JASPERLIB=$DIR/grib2/lib
+export JASPERINC=$DIR/grib2/include
+
+$ source ~/.bashrc
+$ ./configure
+```
+
+You should be given a list of various options for compiler types, whether to compile in serial or parallel, and whether to compile ungrib with GRIB2 capability. Unless you plan to create extremely large domains, it is recommended to compile WPS in serial mode, regardless of whether you compiled WRFV3 in parallel. It is also recommended that you choose a GRIB2 option (make sure you do not choose one that states "NO_GRIB2"). You may choose a non-grib2 option, but most data is now in grib2 format, so it is best to choose this option. You can still run grib1 data when you have built with grib2.
+
+Choose the option that lists a compiler to match what you used to compile WRFV3, serial, and grib2. **Note: The option number will likely be different than the number you chose to compile WRFV3.**
+
+```console
+Will use NETCDF in dir: /home/modelagem/Build_WRF/LIBRARIES/netcdf
+Found Jasper environment variables for GRIB2 support...
+  $JASPERLIB = /home/modelagem/Build_WRF/LIBRARIES/grib2/lib
+  $JASPERINC = /home/modelagem/Build_WRF/LIBRARIES/grib2/include
+-----------------------------------------------------------------------------------------------
+Please select from among the following supported platforms:
+
+   1. Linux x86_64, gfortran (serial)
+   2. Linux x86_64, gfortran (serial_NO_GRIB2)
+   3. Linux x86_64, gfortran (dmpar)
+   4. Linux x86_64, gfortran (dmpar_NO_GRIB2)
+   5. Linux x86_64, PGI compiler (serial)
+   6. Linux x86_64, PGI compiler (serial_NO_GRIB2)
+   7. Linux x86_64, PGI compiler (dmpar)
+   8. Linux x86_64, PGI compiler (dmpar_NO_GRIB2)
+   9. Linux x86_64, PGI compiler, SGI MPT (serial)
+  10. Linux x86_64, PGI compiler, SGI MPT (serial_NO_GRIB2)
+  11. Linux x86_64, PGI compiler, SGI MPT (dmpar)
+  12. Linux x86_64, PGI compiler, SGI MPT (dmpar_NO_GRIB2)
+  13. Linux x86_64, IA64 and Opteron (serial)
+  14. Linux x86_64, IA64 and Opteron (serial_NO_GRIB2)
+  15. Linux x86_64, IA64 and Opteron (dmpar)
+  16. Linux x86_64, IA64 and Opteron (dmpar_NO_GRIB2)
+  17. Linux x86_64, Intel compiler (serial)
+  18. Linux x86_64, Intel compiler (serial_NO_GRIB2)
+  19. Linux x86_64, Intel compiler (dmpar)
+  20. Linux x86_64, Intel compiler (dmpar_NO_GRIB2)
+  21. Linux x86_64, Intel compiler, SGI MPT (serial)
+  22. Linux x86_64, Intel compiler, SGI MPT (serial_NO_GRIB2)
+  23. Linux x86_64, Intel compiler, SGI MPT (dmpar)
+  24. Linux x86_64, Intel compiler, SGI MPT (dmpar_NO_GRIB2)
+  25. Linux x86_64, Intel compiler, IBM POE (serial)
+  26. Linux x86_64, Intel compiler, IBM POE (serial_NO_GRIB2)
+  27. Linux x86_64, Intel compiler, IBM POE (dmpar)
+  28. Linux x86_64, Intel compiler, IBM POE (dmpar_NO_GRIB2)
+  29. Linux x86_64 g95 compiler (serial)
+  30. Linux x86_64 g95 compiler (serial_NO_GRIB2)
+  31. Linux x86_64 g95 compiler (dmpar)
+  32. Linux x86_64 g95 compiler (dmpar_NO_GRIB2)
+  33. Cray XE/XC CLE/Linux x86_64, Cray compiler (serial)
+  34. Cray XE/XC CLE/Linux x86_64, Cray compiler (serial_NO_GRIB2)
+  35. Cray XE/XC CLE/Linux x86_64, Cray compiler (dmpar)
+  36. Cray XE/XC CLE/Linux x86_64, Cray compiler (dmpar_NO_GRIB2)
+  37. Cray XC CLE/Linux x86_64, Intel compiler (serial)
+  38. Cray XC CLE/Linux x86_64, Intel compiler (serial_NO_GRIB2)
+  39. Cray XC CLE/Linux x86_64, Intel compiler (dmpar)
+  40. Cray XC CLE/Linux x86_64, Intel compiler (dmpar_NO_GRIB2)
+
+Enter selection [1-40] : 3
+-----------------------------------------------------------------------------------------------
+Configuration successful. To build the WPS, type: compile
+-----------------------------------------------------------------------------------------------
+```
+
+The `metgrid.exe` and `geogrid.exe` programs rely on the WRF model's I/O libraries. There is a line in the `configure.wps` file that directs the WPS build system to the location of the I/O libraries from the WRF model.
+
+```console
+WRF_DIR = ../WRFV3
+```
+
+Above is the default setting. As long as the name of the WRF model's top-level directory is "WRFV3" and the WPS and WRFV3 directories are at the same level (which they should be if you have followed exactly as instructed on this page so far), then the existing default setting is correct and there is no need to change it. If it is not correct, you must modify the configure file and then save the changes before compiling.
+
+You can now compile WPS. Compilation should take a few minutes. The ongoing compilation can be checked.
+
+```console
+$ ./compile >& compile.log &
+$ tail -f compile.log
+```
+
+Once the compilation completes, to check whether it was successful, you need to look for 3 main executables in the WPS top-level directory. Then verify that they are not zero-sized.
+
+```console
+$ ls -ls *.exe
+geogrid.exe
+metgrid.exe
+ungrib.exe
+```
