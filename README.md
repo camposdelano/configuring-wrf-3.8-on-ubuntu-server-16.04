@@ -22,8 +22,8 @@ Check your gcc version. It is recommend using version 4.4.0 or later.
 $ gcc −−version
 gcc (Ubuntu 5.3.1−14ubuntu2.1) 5.3.1 20160413
 Copyright (C) 2015 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY of FITNESS FOR A PARTICULAR PURPOSE.
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY of FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
 Create a new, clean directory called `Build_WRF`, and another one called `TESTS`.
@@ -88,4 +88,143 @@ SUCCESS perl test
 ```console
 $ ./TEST_sh.sh
 SUCCESS sh test
+```
+
+## Building libraries
+
+Before getting started, you need to make another directory. Go inside your `Build_WRF` directory and then make a directory called `LIBRARIES`.
+
+```console
+$ cd {path_to_dir}/Build_WRF
+$ mkdir LIBRARIES
+```
+
+Depending on the type of run you wish to make, there are various libraries that should be installed. Go inside your `LIBRARIES` directory and then download all 5 tar files.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/mpich−3.0.4.tar.gz
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/netcdf−4.1.3.tar.gz
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/jasper−1.900.1.tar.gz
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/libpng −1.2.50.tar.gz
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/zlib −1.2.7.tar.gz
+```
+
+**It is important to note that these libraries must all be installed with the same compilers as will be used to install WRFV3 and WPS.**
+
+Configuring NetCDF library: This library is always necessary! Modify the `.bashrc` file in the home directory of current user to set the environment variables.
+
+```console
+$ sudo nano ~/.bashrc
+```
+
+At the bottom of the file add these lines so that they will be set for future logins.
+
+```console
+export DIR={path_to_dir}/Build_WRF/LIBRARIES
+export CC=gcc
+export CXX=g++
+export FC=gfortran
+export FCFLAGS=−m64
+export F77=gfortran
+export FFLAGS=−m64
+```
+
+Then source the file to make these settings active for current session.
+
+```console
+$ source ~/.bashrc
+```
+
+Unpack the `netcdf-4.1.3.tar.gz` file.
+
+```console
+$ tar −zxvf netcdf−4.1.3.tar.gz
+```
+
+Go into the `netcdf-4.1.3` directory and run the configure script with the parameters presented below, make and make install.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES/netcdf-4.1.3
+$ ./configure --prefix=$DIR/netcdf --disable-dap --disable-netcdf-4 --disable-shared
+$ make
+$ make install
+```
+
+Modify again the `.bashrc` file and set two new environment variables at the bottom. Then source the file to make these settings active for current session and leave the directory.
+
+```console
+$ sudo nano ~/.bashrc
+
+export PATH=$DIR/netcdf/bin:$PATH
+export NETCDF=$DIR/netcdf
+
+$ source ~/.bashrc
+$ cd ..
+```
+
+Configuring MPICH library: This library is necessary if you are planning to build WRF in parallel. If your machine does not have more than 1 processor, or if you have no need to run WRF with multiple processors, you can skip installing MPICH.
+
+In principle, any implementation of the MPI-2 standard should work with WRF; however, we have the most experience with MPICH, and therefore, that is what will be described here.
+
+Assuming all the **export** commands were already issued while setting up NetCDF, you can continue on to install MPICH, issuing each of the following commands.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ tar -zxvf mpich-3.0.4.tar.gz
+$ cd {path_to_dir}/Build_WRF/LIBRARIES/mpich-3.0.4
+$ ./configure --prefix=$DIR/mpich
+$ make
+$ make install
+$ sudo nano ~/.bashrc
+
+export PATH=$DIR/mpich/bin:$PATH
+
+$ source ~/.bashrc
+$ cd ..
+```
+
+Configuring zlib: This is a compression library necessary for compiling WPS (specifically ungrib) with GRIB2 capability.
+Assuming all the **export** commands from the NetCDF install are already set, you can move on to the commands to install zlib.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ sudo nano ~/.bashrc
+
+export LDFLAGS=-L$DIR/grib2/lib 
+export CPPFLAGS=-I$DIR/grib2/include 
+
+$ source ~/.bashrc
+$ tar -zxvf zlib-1.2.7.tar.gz
+$ cd {path_to_dir}/Build_WRF/LIBRARIES/zlib-1.2.7
+$ ./configure --prefix=$DIR/grib2
+$ make
+$ make install
+$ cd ..
+```
+
+Configuring libpng: This is a compression library necessary for compiling WPS (specifically ungrib) with GRIB2 capability.
+Assuming all the **export** commands from the NetCDF install are already set, you can move on to the commands to install libpng.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ tar -zxvf libpng-1.2.50.tar.gz
+$ cd {path_to_dir}/Build_WRF/LIBRARIES/libpng-1.2.50
+$ ./configure --prefix=$DIR/grib2
+$ make
+$ make install
+$ cd ..
+```
+
+Configuring JasPer: This is a compression library necessary for compiling WPS (specifically ungrib) with GRIB2 capability.
+Assuming all the **export** commands from the NetCDF install are already set, you can move on to the commands to install jasper.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ tar -zxvf jasper-1.900.1.tar.gz
+$ cd {path_to_dir}/Build_WRF/LIBRARIES/jasper-1.900.1
+$ ./configure --prefix=$DIR/grib2
+$ make
+$ make install
+$ cd ..
 ```
