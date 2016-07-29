@@ -220,6 +220,7 @@ $ cd ..
 ## Libraries compatibility tests
 
 Once the target machine is able to make small Fortran and C executables (what was verified in the System Environment Tests section), and after the NetCDF and MPI libraries are constructed (two of the libraries from the Building Libraries section), to emulate the WRF code's behavior, two additional small tests are required. We need to verify that the libraries are able to work with the compilers that are to be used for the WPS and WRF builds.
+
 Move to `TESTS` directory, download the tar file that contans these tests and unpack it.
 ```console
 $ cd {path_to_dir}/TESTS
@@ -250,7 +251,6 @@ SUCCESS test 1 fortran + c + netcdf
 * Test 2: Fortran + C + NetCDF + MPI
 
 The NetCDF+MPI test requires include files from both of these packages be in this directory, but the MPI scripts automatically make the `mpif.h` file available without assistance, so no need to copy that one. Copy the NetCDF include file here and note that the MPI executables `mpif90` and `mpicc` are used below when compiling. Issue the following commands.
-
 ```console
 $ cp ${NETCDF}/include/netcdf.inc .
 $ mpif90 -c 02_fortran+c+netcdf+mpi_f.f
@@ -260,10 +260,104 @@ $ mpirun ./a.out
 ```
 
 The following should be displayed on your screen.
-
 ```console
 C function called by Fortran
 Values are xx = 2.00 and ii = 1
 status = 2
 SUCCESS test 2 fortran + c + netcdf + mpi
+```
+
+## Building WRFV3
+
+After ensuring that all libraries are compatible with the compilers, you can now prepare to build WRFV3. If you do not already have a `WRFV3` tar file, move to your `Build_WRF` directory, download that file and unpack it. Then go into the `WRFV3` directory and create a configuration file for your computer and compiler.
+```console
+$ cd {path_to_dir}/Build_WRF
+$ wget http://www2.mmm.ucar.edu/wrf/src/WRFV3.8.TAR.gz
+$ tar -zxvf WRFV3.8.TAR.gz
+$ cd {path_to_dir}/Build_WRF/WRFV3
+$ ./configure
+```
+
+You will see various options. Choose the option that lists the compiler you are using and the way you wish to build WRFV3 (i.e., serially or in parallel). Although there are 3 different types of parallel (smpar, dmpar, and dm+sm), it is recommend choosing dmpar option.
+```console
+checking for perl5... no
+checking for perl... found /usr/bin/perl (perl)
+Will use NETCDF in dir: /usr
+HDF5 not set in environment. Will configure WRF for use without.
+PHDF5 not set in environment. Will configure WRF for use without.
+Will use 'time' to report timing information
+$JASPERLIB or $JASPERINC not found in environment, configuring to build without grib2 I/O...
+-----------------------------------------------------------------------------------------------
+Please select from among the following Linux x86_64 options:
+
+ 1. (serial)  2. (smpar)  3. (dmpar)  4. (dm+sm) PGI (pgf90/gcc)
+ 5. (serial)  6. (smpar)  7. (dmpar)  8. (dm+sm) PGI (pgf90/pgcc): SGI MPT
+ 9. (serial) 10. (smpar) 11. (dmpar) 12. (dm+sm) PGI (pgf90/gcc): PGI accelerator
+13. (serial) 14. (smpar) 15. (dmpar) 16. (dm+sm) INTEL (ifort/icc)
+                                     17. (dm+sm) INTEL (iforticc): Xeon Phi (MIC architecture)
+18. (serial) 19. (smpar) 20. (dmpar) 21. (dm+sm) INTEL (ifort/icc): Xeon (SNB with AVX mods)
+22. (serial) 23. (smpar) 24. (dmpar) 25. (dm+sm) INTEL (ifort/icc): SGI MPT
+26. (serial) 27. (smpar) 28. (dmpar) 29. (dm+sm) INTEL (ifort/icc): IBM POE
+30. (serial)             31. (dmpar)             PATHSCALE (pathf90/pathcc)
+32. (serial) 33. (smpar) 34. (dmpar) 35. (dm+sm) GNU (gfortran/gcc)
+36. (serial) 37. (smpar) 38. (dmpar) 39. (dm+sm) IBM (xlf90_r/cc_r)
+40. (serial) 41. (smpar) 42. (dmpar) 43. (dm+sm) PGI (ftn/gcc): Cray XC CLE
+44. (serial) 45. (smpar) 46. (dmpar) 47. (dm+sm) CRAY CCE (ftn/cc): Cray XE and XC
+48. (serial) 49. (smpar) 50. (dmpar) 51. (dm+sm) INTEL (ftn/icc): Cray XC
+52. (serial) 53. (smpar) 54. (dmpar) 55. (dm+sm) PGI (pgf90/pgcc)
+56. (serial) 57. (smpar) 58. (dmpar) 59. (dm+sm) PGI (pgf90/gcc): -f90=pgf90
+60. (serial) 61. (smpar) 62. (dmpar) 63. (dm+sm) PGI (pgf90/pgcc): -f90=pgf90
+64. (serial) 65. (smpar) 66. (dmpar) 67. (dm+sm) INTEL (ifort/icc): HSW/BDW
+68. (serial) 69. (smpar) 70. (dmpar) 71. (dm+sm) INTEL (ifort/icc): KNL MIC
+
+Enter selection [1-71] : 34
+-----------------------------------------------------------------------------------------------
+Compile for nesting? (1=basic, 2=preset moves, 3=vortex following) [default 1]: 1
+
+Configuration successful!
+-----------------------------------------------------------------------------------------------
+testing for MPI_Comm_f2c and MPI_Comm_c2f 
+	MPI_Comm_f2c and MPI_Comm_c2f are supported
+testing for fseeko and fseeko64
+fseeko64 is supported
+-----------------------------------------------------------------------------------------------
+
+...
+```
+
+Once your configuration is complete, you should have a `configure.wrf` file, and you are ready to compile. To compile WRFV3, you will need to decide which type of case you wish to compile. The options are listed below.
+```console
+em_real (3d real case)
+em_quarter_ss (3d ideal case)
+em_b_wave (3d ideal case)
+em_les (3d ideal case)
+em_heldsuarez (3d ideal case)
+em_tropical_cyclone (3d ideal case)
+em_hill2d_x (2d ideal case)
+em_squall2d_x (2d ideal case)
+em_squall2d_y (2d ideal case)
+em_grav2d_x (2d ideal case)
+em_seabreeze2d_x (2d ideal case)
+em_scm_xy (1d ideal case)
+```
+
+For this purpose we are going to compile WRF for real cases. Compilation should take about 20-30 minutes. The ongoing compilation can be checked.
+```console
+$ ./compile em_real >& compile.log &
+$ tail -f compile.log
+```
+
+Once the compilation completes, to check whether it was successful, you need to look for executables in the `WRFV3/main` directory.
+```console
+$ ls -las main/*.exe
+ndown.exe (one-way nesting)
+real.exe (real data initialization)
+tc.exe (for tc bogusing--serial only)
+wrf.exe (model executable)
+```
+
+These executables are linked to 2 different directories. You can choose to run WRF from either directory.
+```console
+WRFV3/run
+WRFV3/test/em_real
 ```
