@@ -123,6 +123,8 @@ $ sudo nano ~/.bashrc
 
 At the bottom of the file add these lines so that they will be set for future logins.
 ```console
+
+(...)
 export DIR={path_to_dir}/Build_WRF/LIBRARIES
 export CC=gcc
 export CXX=g++
@@ -154,6 +156,7 @@ Modify again the `.bashrc` file and set two new environment variables at the bot
 ```console
 $ sudo nano ~/.bashrc
 
+(...)
 export PATH=$DIR/netcdf/bin:$PATH
 export NETCDF=$DIR/netcdf
 
@@ -175,6 +178,7 @@ $ make
 $ make install
 $ sudo nano ~/.bashrc
 
+(...)
 export PATH=$DIR/mpich/bin:$PATH
 
 $ source ~/.bashrc
@@ -187,6 +191,7 @@ Assuming all the **export** commands from the NetCDF install are already set, yo
 $ cd {path_to_dir}/Build_WRF/LIBRARIES
 $ sudo nano ~/.bashrc
 
+(...)
 export LDFLAGS=-L$DIR/grib2/lib 
 export CPPFLAGS=-I$DIR/grib2/include 
 
@@ -332,7 +337,7 @@ testing for fseeko and fseeko64
 fseeko64 is supported
 -----------------------------------------------------------------------------------------------
 
-...
+(...)
 ```
 
 Once your configuration is complete, you should have a `configure.wrf` file, and you are ready to compile. To compile WRFV3, you will need to decide which type of case you wish to compile. The options are listed below.
@@ -391,6 +396,7 @@ The next step is to configure WPS, however, you first need to set some paths for
 ```console
 $ sudo nano ~/.bashrc
 
+(...)
 export JASPERLIB=$DIR/grib2/lib
 export JASPERINC=$DIR/grib2/include
 
@@ -460,7 +466,9 @@ Configuration successful. To build the WPS, type: compile
 The `metgrid.exe` and `geogrid.exe` programs rely on the WRF model's I/O libraries. There is a line in the `configure.wps` file that directs the WPS build system to the location of the I/O libraries from the WRF model.
 
 ```console
+(...)
 WRF_DIR = ../WRFV3
+(...)
 ```
 
 Above is the default setting. As long as the name of the WRF model's top-level directory is "WRFV3" and the WPS and WRFV3 directories are at the same level (which they should be if you have followed exactly as instructed on this page so far), then the existing default setting is correct and there is no need to change it. If it is not correct, you must modify the configure file and then save the changes before compiling.
@@ -499,7 +507,9 @@ The directory infomation is given to the geogrid program in the `namelist.wps` f
 $ cd WPS
 $ nano namelist.wps
 
+(...)
 geog_data_path = '{path_to_dir}/Build_WRF/WPS_GEOG'
+(...)
 ```
 
 ## Post processing
@@ -523,19 +533,19 @@ Once unpacked, move to `ARWpost` directory and look for the following files.
 ```console
 $ cd {path_to_dir}/Build_WRF/ARWpost
 $ ls -las
-arch/              # A directory containing configure and 
-		   #    compilation control
-clean              # Script to clean compiled code
-compile            # Script to compile the code
-configure          # Script to configure the compilation for
-		   #    your system
-namelist.ARWpost   # Namelist to control the running of the code
-README             # A text file containing basic information
-		   #    on running ARWpost
-src/               # Directory containing all source code
-scripts            # Directory containing some grads sample
-		   #    scripts
-util/              # Directory containing some utilities
+arch			# A directory containing configure and
+				#    compilation control
+clean			# Script to clean compiled code
+compile			# Script to compile the code
+configure		# Script to configure the compilation for
+				# your system
+namelist.ARWpost	# Namelist to control the running of the code
+README			# A text file containing basic information
+				# on running ARWpost
+src				# Directory containing all source code
+script			# Directory containing some grads sample
+				# scripts
+util			# Directory containing some utilities
 ```
 
 Assuming that the NETCDF variable is set, it is possible to configure the ARWpost.
@@ -567,7 +577,9 @@ Edit the `Makefile` file into the `src` folder and modify the `-L\$(NETCDF)` lin
 $ cd {path_to_dir}/ARWpost/src
 $ nano Makefile
 
+(...)
 -L$(NETCDF)/lib -lnetcdf -lnetcdff -I$(NETCDF)/include -lnetcdf
+(...)
 ```
 
 Move to the `ARWpost` folder and modify the `CFLAGS` and `CPP` lines into `configure.arwp` file.
@@ -576,8 +588,10 @@ Move to the `ARWpost` folder and modify the `CFLAGS` and `CPP` lines into `confi
 $ cd {path_to_dir}/ARWpost
 $ nano configure.arwp
 
+(...)
 CFLAGS = -fPIC -m64
 CPP = /lib/cpp -P -traditional
+(...)
 ```
 
 Then compile the ARWpost. If successful, the executable ARWpost.exe will be created.
