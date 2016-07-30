@@ -480,3 +480,110 @@ geogrid.exe
 metgrid.exe
 ungrib.exe
 ```
+
+
+## Static geography data
+
+The WRF modeling system is able to create idealized simulations, though most users are interested in the real-data cases. To initiate a real-data case, the domain's physical location on the globe and the static information for that location must be created. This requires a data set that includes such fields as topography and land use categories. Move to your `Build_WRF` directory, download the file and unpack it. Once unpacked it will be called `geog`, rename to `WPS_GEOG`.
+
+```console
+$ cd {path_to_dir}/Build_WRF
+$ wget http://www2.mmm.ucar.edu/wrf/src/wps_files/geog_complete.tar.bz2
+$ tar -xvf geog_complete.tar.bz2
+$ mv geog WPS_GEOG
+```
+
+The directory infomation is given to the geogrid program in the `namelist.wps` file in the `&geogrid` section. The data expands to approximately 10 GB. This data allows a user to run the geogrid.exe program.
+
+```console
+$ cd WPS
+$ nano namelist.wps
+
+geog_data_path = '{path_to_dir}/Build_WRF/WPS_GEOG'
+```
+
+## Post processing
+
+ARWpost is a Fortran program that reads WRF-ARW input and output files, then generates GrADS output files.
+
+Once the output files have been generated, GrADS can be used to produce horizontal or vertical cross-section plots of scalar fields (contours) or vector fields (barbs or arrows), vertical profiles and soundings.
+
+Is recommend the use of ARWpost Version 3 or higher. This code is not dependent on the successful compilation of the WRFV3 code, and can therefore be installed anywhere, even if WRFV3 is not installed on this computer.
+
+Move to your `Build_WRF` directory, download the file and unpack it.
+
+```console
+$ cd {path_to_dir}/Build_WRF
+$ wget http://www2.mmm.ucar.edu/wrf/src/ARWpost_V3.tar.gz
+$ tar -zxvf ARWpost_V3.tar.gz
+```
+
+Once unpacked, move to `ARWpost` directory and look for the following files.
+
+```console
+$ cd {path_to_dir}/Build_WRF/ARWpost
+$ ls -las
+arch/              # A directory containing configure and 
+		   #    compilation control
+clean              # Script to clean compiled code
+compile            # Script to compile the code
+configure          # Script to configure the compilation for
+		   #    your system
+namelist.ARWpost   # Namelist to control the running of the code
+README             # A text file containing basic information
+		   #    on running ARWpost
+src/               # Directory containing all source code
+scripts            # Directory containing some grads sample
+		   #    scripts
+util/              # Directory containing some utilities
+```
+
+Assuming that the NETCDF variable is set, it is possible to configure the ARWpost.
+
+```console
+$ ./configure
+```
+
+You will see a list of options for your computer. Make sure the netCDF path is correct and pick the compile option for your machine.
+
+```console
+Will use NETCDF in dir: /home/drasousa/Build_WRF/LIBRARIES/netcdf
+-----------------------------------------------------------------------------------------------
+Please select from among the following supported platforms.
+
+1.  PC Linux i486 i586 i686 x86_64, PGI compiler	
+2.  PC Linux i486 i586 i686 x86_64, Intel compiler	
+3.  PC Linux i486 i586 i686 x86_64, gfortran compiler 
+
+Enter selection [1-3] : 3
+-----------------------------------------------------------------------------------------------
+Configuration successful. To build the ARWpost, type: compile
+-----------------------------------------------------------------------------------------------
+```
+
+Edit the `Makefile` file into the `src` folder and modify the `-L\$(NETCDF)` line into the `ARWpost.exe` environment to look like:
+
+```console
+$ cd {path_to_dir}/ARWpost/src
+$ nano Makefile
+
+-L$(NETCDF)/lib -lnetcdf -lnetcdff -I$(NETCDF)/include -lnetcdf
+```
+
+Move to the `ARWpost` folder and modify the `CFLAGS` and `CPP` lines into `configure.arwp` file.
+
+```console
+$ cd {path_to_dir}/ARWpost
+$ nano configure.arwp
+
+CFLAGS = -fPIC -m64
+CPP = /lib/cpp -P -traditional
+```
+
+Then compile the ARWpost. If successful, the executable ARWpost.exe will be created.
+
+```console
+$ ./compile
+$ ls -ls *.exe
+ARWpost.exe
+```
