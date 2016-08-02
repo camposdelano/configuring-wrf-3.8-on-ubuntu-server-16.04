@@ -34,7 +34,7 @@ Create a new, clean directory called `Build_WRF`, and another one called `TESTS`
 There are a few simple tests that can be run to verify that the fortran compiler is built properly, and that it is compatible with the C compiler. Download the tar file that contains the tests into the `TESTS` directory and unpack the tar file.
 ```console
 $ cd {path_to_dir}/TESTS
-$ wget http ://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
+$ wget http://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/Fortran_C_tests.tar
 $ tar −xvf Fortran_C_tests.tar
 ```
 
