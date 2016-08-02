@@ -125,7 +125,7 @@ At the bottom of the file add these lines so that they will be set for future lo
 ```console
 
 (...)
-export DIR={path_to_dir}/Build_WRF/LIBRARIES
+export DIR=/{path_to_dir}/Build_WRF/LIBRARIES
 export CC=gcc
 export CXX=g++
 export FC=gfortran
