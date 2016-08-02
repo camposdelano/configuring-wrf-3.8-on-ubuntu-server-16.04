@@ -571,7 +571,7 @@ Configuration successful. To build the ARWpost, type: compile
 -----------------------------------------------------------------------------------------------
 ```
 
-Edit the `Makefile` file into the `src` folder and modify the `-L\$(NETCDF)` line into the `ARWpost.exe` environment to look like:
+Edit the `Makefile` file into the `src` folder and modify the `-L$(NETCDF)` line into the `ARWpost.exe` environment to look like:
 
 ```console
 $ cd {path_to_dir}/ARWpost/src
