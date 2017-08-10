@@ -624,3 +624,27 @@ export PATH=$DIR/cdo/bin:$PATH
 
 $ source ~/.bashrc
 ```
+
+Configuring ncl library: Create a folder named ncl into the LIBRARY folder, download the ncl tar file and unpack it. Once unpacked add the ncl environment variables into the `.bashrc` file and source it. If you get missing `librtmp.so.0` library message while running the ncl, try to locate the missing library into your system and make a symbolic link.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ mkdir ncl
+$ cd ncl
+$ wget https://www.earthsystemgrid.org/download/fileDownload.html?logicalFileId=e087c7da-cd9a-11e4-bb80-00c0f03d5b7c
+$ tar -zxvf ncl_ncarg-6.3.0.Linux_Debian7.8_x86_64_gcc472.tar.gz
+$ sudo nano ~/.bashrc
+
+export NCARG_ROOT=$DIR/ncl
+export PATH=$NCARG_ROOT/bin:$PATH
+export DISPLAY=:0.0
+
+$ source ~/.bashrc
+$ locate librtmp 	# if you get error message while loading shared libraries
+
+/usr/lib/x86_64-linux-gnu/librtmp.so.1
+
+$ cd /usr/lib/
+$ sudo ln -s /usr/lib/x86_64-linux-gnu/librtmp.so.1 librtmp.so.0
+
+$ ng4ex gsun01n -clean		# execute this is super user mode if you get permission error
