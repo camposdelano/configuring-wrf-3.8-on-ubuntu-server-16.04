@@ -647,4 +647,4 @@ $ locate librtmp 	# if you get error message while loading shared libraries
 $ cd /usr/lib/
 $ sudo ln -s /usr/lib/x86_64-linux-gnu/librtmp.so.1 librtmp.so.0
 
-$ ng4ex gsun01n -clean		# execute this is super user mode if you get permission error
+$ ng4ex gsun01n -clean		# execute this in super user mode if you get permission error
