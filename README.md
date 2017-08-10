@@ -599,3 +599,28 @@ $ ./compile
 $ ls -ls *.exe
 ARWpost.exe
 ```
+
+## Extra steps
+
+Install grads, nco and nedit:
+
+```console
+$ sudo apt-get install grads nco nedit
+```
+
+Configuring cdo library: Download de cdo tar file and unpack it. Once unpacked, go inside the unpacked cdo folder and run the configure script, make and make install. Then add the cdo environment into the `.bashrc` file and source it.
+
+```console
+$ cd {path_to_dir}/Build_WRF/LIBRARIES
+$ wget https://code.zmaw.de/attachments/download/12760/cdo-1.7.2.tar.gz
+$ tar -xvf cdo-1.7.2.tar.gz
+$ cd cdo-1.7.2
+$ ./configure --prefix=$DIR/cdo --with-netcdf=$DIR/netcdf --with-grib2=$DIR/grib2
+$ make
+$ make install
+$ sudo nano ~/.bashrc
+
+export PATH=$DIR/cdo/bin:$PATH
+
+$ source ~/.bashrc
+```
